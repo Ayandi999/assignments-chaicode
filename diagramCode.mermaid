@@ -1,0 +1,75 @@
+customer [icon: user, color: green]{
+  customer_id serial PK
+  customer_name varchar(100) NOT NULL
+  customer_email varchar(50) unique NOT NULL
+  customer_pasword varchar(100) NOT NULL
+
+  
+  customer_profile_pic url
+  customer_contact_number varchar(15) NOT NULL
+  customer_delivery_address text //can be null need it when ordering
+
+  created_at date
+  Updated_at date
+}
+
+//I want to store customer-product in cart here
+cart[icon: shopping-cart,color: pink]{
+  //Composite Key = [customer_id + product_id]
+  customer_id FK  NOT NULL 
+  product_id FK  NOT NULL
+  created_at date
+  updated_at date   
+}
+
+product[icon: shirt, color: blue]{
+  product_id PK serial
+  //Product details:
+  product_image url NOT NULL //atleast one image
+  product_dscription text
+  product_price NUMBER NOT NULL 
+  product_type_thrift BOOLEAN NOT NULL //if ! we list it as handmade
+}
+
+stocks[icon: warehouse, color: orange]{
+  product_id FK NOT NULL 
+  quantity_available NUMBER
+}
+
+orders[icon: money, color: purple]{
+  order_id Serial PK
+  customer_id FK NOT NULL
+  is_payed BOOLEAN 
+  is_shipped BOOLEAN 
+  total_price NUMBER
+  placed_at date
+  delivered_at date
+  expected_delivery date
+}
+
+//For placing one order overall instad of 5
+order_items[icon: shopping-bag,color: white]{
+  order_id FK
+  product_id FK NOT NULL
+  product_quantity NUMBER NOT NULL
+}
+
+wishlist[icon: list, color: yellow]{
+  product_id FK
+  customer_id FK
+  product_availibility Fk
+}
+
+
+wishlist.customer_id > customer.customer_id
+wishlist.product_id > stocks.product_id
+wishlist.product_availibility > stocks.quantity_available
+
+order_items.product_id  <> product.product_id
+order_items.order_id - orders.order_id
+
+
+
+stocks.product_id - product.product_id
+cart.product_id > product.product_id
+customer.customer_id < cart.customer_id
