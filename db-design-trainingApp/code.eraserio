@@ -1,0 +1,132 @@
+customers[icon: person, color: blue]{
+  customer_id SERIAL PK
+  customer_first_name varchar(50) NOT NULL
+  customer_last_name varchar(50) NOT NULL
+  customer_phone_number varchar(13)
+  customer_email varchar(200) NOT NULL
+  customer_password varcahr(100) NOT NULL  
+  customer_profile_photo url
+  customer_detaile text
+}
+
+trainers[icon: person, color: white]{
+  trainer_id SERIAL PK
+  trainer_phone_number number NOT NULL
+  trainer_first_name verchar(50) NOT NULL
+  trainer_last_name varchar(50) NOT NULL
+  trainer_email varcahr(200) NOT NULL
+  trainer_password varchar(100) NOT NULL
+  trainer_ig_handle varcahr(50)
+}
+
+programs[icon: activity, color: magenta]{
+  program_id SERIAL PK
+  program_name varchar(20)
+  program_description text
+  program_cost number
+  program_duration number //in months
+}
+
+enrolements[icon: money, color: orange]{
+  serial_number SERIAL PK
+  customer_id number FK //link it
+  program_id number FK //link it
+  enroled_at date
+  finish_at date
+}
+
+enrolements.customer_id > customers.customer_id
+programs.program_id < enrolements.program_id
+
+
+sessions[icon: workflow]{
+  session_id SERIAL PK
+  customer_id number FK //Link it
+  trainer_id number FK //LINK it
+  session_date date NOT NULL
+  session_start_time datetime NOT NULL
+  session_end_time datetime NOT NULL
+}
+
+customers.customer_id <> sessions.session_id
+trainers.trainer_id < sessions.session_id
+
+consultations[icon: handshake]{
+  cosultation_id SERIAL PK
+  customer_id number FK
+  expert_id numebr FK
+  consultation_date date NOT NULL
+  consultation_time datretime NOT NULL
+}
+customers.customer_id <> consultations.customer_id
+consultations.expert_id > trainers.trainer_id
+
+
+diets[color: green]{
+  diet_id SERIAL PK
+  customer_id number FK
+  expert_id number FK
+  assigned_at date NOT NULL
+  diet_plan text NOT NULL//acctual diet assigned
+}
+
+diets.customer_id - customers.customer_id
+diets.expert_id > trainers.trainer_id
+
+
+workout_plans[color: green]{
+  workout_plan_id SERIAL PK
+  customer_id number FK
+  expert_id number FK
+  assigned_at date NOT NULL
+  workout_plan text NOT NULL//acctual diet assigned
+}
+
+workout_plans.customer_id - customers.customer_id
+workout_plans.expert_id > trainers.trainer_id
+
+customer_details_collected[icon: person, color: pink]{
+  detail_id SERIAL PK
+  customer_id FK
+  collected_by FK
+  customer_weight number NOT NULL
+  customer_height number NOT NULL
+  special_notes text //contain any medical conditions or special needs for that customer.
+}
+customers.customer_id - customer_details_collected.customer_id
+customer_details_collected.collected_by > trainers.trainer_id
+
+//For legal compliance i need abother table where i change trainers if someone updated the detail
+trainer_transfer_log[icon: handshake,color: red]{
+  transfer_log_id SERIAL PK
+  current_trainer_id FK NOT NULL
+  new_trainer_id FK NOT NULL
+  customer_id FK NOT NULL
+  transferd_at date
+  reason text
+  updated_detail text
+}
+
+trainer_transfer_log.new_trainer_id > trainers.trainer_id
+trainer_transfer_log.current_trainer_id > trainers.trainer_id
+trainer_transfer_log.customer_id > customers.customer_id
+
+
+consistency_table[icon: activity, color: blue]{
+  customer_id number FK
+  current_streak number
+  last_active_day date 
+  longest_streak number
+}
+
+consistency_table.customer_id - customers.customer_id
+
+payment_history[icon: money,color: green]{
+  transaction_id PK NOT NULL
+  customer_id FK
+  program_id FK
+  date_of_enrolement date
+}
+
+payment_history.customer_id < customers.customer_id
+payment_history.program_id > programs.program_id
