@@ -1,0 +1,135 @@
+customers[icon: person,color: green]{
+  customer_id number SERIAL PK NOT NULL
+  customer_first_name varchar(50) NOT NULL
+  customer_last_name varchar(50)  NOT NULL
+  customer_phone_number varchar(15) NOT NULL
+  customer_email varchar(100) NOT NULL
+  customer_password varchar(50) NOT NULL
+  customer_profile_photo url
+}
+
+
+
+doctors[icon: doctor, color: green]{
+  doctor_nmr_id number PK NOT NULL
+  doctor_first_name varchar(100) NOT NULL
+  doctor_last_name varchar(100) NOT NULL
+  doctor_contact_number number NOT NULL
+  doctor_contact_number varchar(15) NOT NULL
+  doctor_email varchar(100)
+  doctor_speciality varchar(100) NOT NULL
+  doctor_profile url
+}
+
+services[icon: list,color: red]{
+  service_id number SERIAL NOT NULL
+  service_name varchar(100) NOT NULL
+  doctor_id varchar(100) FK
+  //timeslots
+  start_time_slot datetime NOT NULL
+  end_time_slot datetime NOT NULL
+}
+
+services.doctor_id < doctors.doctor_nmr_id
+
+payment[icon: money,color:orange]{
+  payment_id: number PK SERIAL
+  transaction_id: varchar PK NOT NULL
+  payment_method: varchar(10)
+  appoinment_id: number FK NOT NULL
+}
+
+payment.appoinment_id - apponments.appoinment_id
+
+apponments[icon: handshake,color: magenta]{
+  appoinment_id number SRIAL PK NOT NULL
+  customer_id number FK NOT NULL
+  doctor_id number FK NOT NULL
+  date_of_appoinment datetime NOT NULL
+  timeslot datetime NOT NULL
+  payment_id number FK NOT NULL 
+}
+apponments.customer_id > customers.customer_id
+apponments.doctor_id > doctors.doctor_nmr_id
+apponments.payment_id - payment.payment_id
+
+
+
+
+//if cutomer acctually makes it
+consultation[icon: handshake,color: magenta]{
+  consultation_id: number SERAIL PK
+  appoinment_id: number FK NOT NULL
+  prescription: text
+  next_appoinment: datetime 
+  ordered_test : number FK 
+}
+
+consultation.appoinment_id - apponments.appoinment_id
+consultation.ordered_test - test_orders.order_id
+
+labs[icon: test-tube, color:blue]{
+  lab_regsitration_number number PK NOT NULL
+  lab_name varchar(100) NOT NULL
+  lab_location varchar(200) NOT NULL
+}
+
+test_orders[icon: test-tube, color: blue]{
+  order_id number SERIAL
+  doctor_id number FK NOT NULL
+  customer_id number FK
+  status varhcar(10) NOT NULL
+}
+
+orders[icon: test-tube,color: blue]{
+  order_id number FK
+  test_id number 
+  test_name varchar(100) NOT NULL
+  lab_id number FK NOT NULL
+}
+orders.order_id > test_orders.order_id
+orders.lab_id <> labs.lab_regsitration_number
+
+
+
+results[icon: test-tube,color:blue]{
+  order_id number FK NOT NULL
+  test_id number FK NOT NULL
+  test_result text NOT NULL
+  is_reviewd boolean //when doctor has done the checking part.
+}
+
+results.order_id - test_orders.order_id
+results.test_id > orders.test_id
+
+
+
+//Some internal tables for lawsuit and accountability purposes
+paitient_records[icon: list,color: crimson]{
+  record_id number SERIAL 
+  patient_id number FK NOT NULL 
+  doctor_id number Fk NOT NULL
+  diagonosis_provided text NOT NULL
+  //if these are prescribed
+  drugs_prescribed text
+  tests_prescribed text
+  test_order_id FK 
+}
+
+paitient_records.patient_id > customers.customer_id
+paitient_records.doctor_id > doctors.doctor_nmr_id
+
+
+paitient_history[icon: list,color: crimson]{
+  data_id number SERIAL
+  paitent_id number FK NOT NULL
+  paitent_height number 
+  paitent_weight number
+  paitent_description text
+  patients_past_history text //just to know if he has any history of somekind of abuse or any other form of medical conditions familt condition
+  recorded_by FK NOT NULL
+  recorded_at datetime 
+}
+paitient_history.paitent_id - customers.customer_id
+paitient_history.recorded_by - doctors.doctor_nmr_id //this should have beed a nurse IK
+
