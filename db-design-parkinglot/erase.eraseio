@@ -1,0 +1,135 @@
+
+vehicles [icon: car, color: blue] {
+  id string pk
+  registration_number string
+  rfid_tag string
+  vehicle_type_id string fk
+  owner_name string
+  phone string
+}
+
+vehicle_types [icon: truck, color: blue] {
+  id string pk
+  name string
+  description string
+}
+
+
+access_categories [icon: shield, color: purple] {
+  id string pk
+  name string
+  priority_level int
+  discount_percent decimal
+  category_type string
+}
+
+// Parking Structure 
+parking_zones [icon: map-pin, color: green] {
+  id string pk
+  name string
+  zone_type string
+  has_ev_charging boolean
+}
+
+parking_levels [icon: layers, color: green] {
+  id string pk
+  zone_id string fk
+  level_number int
+  total_spots int
+}
+
+parking_spots [icon: square, color: green] {
+  id string pk
+  level_id string fk
+  spot_number string
+  vehicle_type_id string fk
+  is_ev_charging boolean
+  status string
+  is_reserved boolean
+  reserved_for_category_id string fk
+}
+
+// Session & Payment
+parking_tickets [icon: file-text, color: yellow] {
+  id string pk
+  vehicle_id string fk
+  spot_id string fk
+  access_category_id string fk
+  entry_time timestamp
+  exit_time timestamp
+  status string
+}
+
+payments [icon: credit-card, color: orange] {
+  id string pk
+  ticket_id string fk
+  amount decimal
+  payment_method string
+  paid_at timestamp
+}
+reservations [icon: bookmark, color: purple] {
+  
+  id string pk
+  vehicle_id string fk
+  spot_id string fk
+  access_category_id string fk
+  reserved_from timestamp
+  reserved_until timestamp
+  status string
+}
+ev_charging_stations [icon: zap, color: yellow] {
+  
+  id string pk
+  level_id string fk
+  station_number string
+  charger_type string
+  power_output_kw decimal
+  status string
+}
+ev_charging_sessions [icon: battery-charging, color: yellow] {
+  
+  id string pk
+  station_id string fk
+  ticket_id string fk
+  start_time timestamp
+  end_time timestamp
+  energy_consumed_kwh decimal
+  charging_fee decimal
+}
+bike_parking_zones [icon: compass, color: red] {
+  
+  id string pk
+  name string
+  total_spots int
+  available_spots int
+}
+bike_parking_spots [icon: circle, color: red] {
+  
+  id string pk
+  zone_id string fk
+  spot_number string
+  status string
+}
+
+
+
+
+
+
+// Relationships
+vehicles.vehicle_type_id > vehicle_types.id
+parking_levels.zone_id > parking_zones.id
+parking_spots.level_id > parking_levels.id
+parking_spots.vehicle_type_id > vehicle_types.id
+parking_tickets.vehicle_id > vehicles.id
+parking_tickets.spot_id > parking_spots.id
+parking_tickets.access_category_id > access_categories.id
+payments.ticket_id - parking_tickets.id
+reservations.vehicle_id > vehicles.id
+reservations.spot_id > parking_spots.id
+reservations.access_category_id > access_categories.id
+ev_charging_stations.level_id > parking_levels.id
+ev_charging_sessions.station_id > ev_charging_stations.id
+ev_charging_sessions.ticket_id > parking_tickets.id
+bike_parking_spots.zone_id > bike_parking_zones.id
+parking_spots.reserved_for_category_id > access_categories.id
