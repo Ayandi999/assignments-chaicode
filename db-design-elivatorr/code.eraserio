@@ -1,0 +1,87 @@
+buildings [icon: building, color: blue] {
+  id numbwe SERIAL PK 
+  name varchar(50)
+  cluster_number number NOT NULL //this is like storing the location/complex
+  city varchar(20)
+  total_floors number
+  created_at datetime
+}
+
+floors [icon: layers, color: gray] {
+  id number PK
+  building_id number FK
+  floor_number number
+}
+
+elevator_shafts [icon: box, color: purple] {
+  id number PK
+  building_id number FK
+  shaft_code number
+}
+
+elevators [icon: arrow-up-circle, color: green] {
+  id number SERIAL PK
+  shaft_id number FK
+  capacity number NOT NULL
+  installed_at datetime
+}
+
+elevator_floor_service [icon: git-merge, color: orange] {
+  service_id number SERIAL PK
+  elevator_id number FK
+  floor_id number FK
+}
+
+elevator_status [icon: activity, color: yellow] {
+  status_log number SERIAL pk
+  elevator_id number FK
+  status enum(working,under Mantainance)
+  current_floor number 
+  direction varcahr(50)
+  updated_at datetime
+}
+
+floor_requests [icon: bell, color: red] {
+  id number SERIAL PK
+  floor_id number FK
+  requested_floor number
+  direction varchar(50)
+  status enum(working,mantainance)
+  created_at datetime
+}
+
+ride_allocations [icon: check-circle, color: green] {
+  id number SERIAL PK
+  request_id number FK
+  elevator_id numbre Fk
+  allocated_at datetime
+}
+
+ride_logs [icon: file-text, color: blue] {
+  id varchar(50) PK
+  allocation_id number FK
+  start_floor number
+  end_floor number
+}
+
+maintenance_records [icon: tool, color: orange] {
+  id number SERIAL PK
+  elevator_id number FK
+  type varchar(50)
+  description text
+  technician varchar(100)
+  started_at datetime
+  completed_at datetime
+}
+
+buildings.id < floors.building_id
+buildings.id < elevator_shafts.building_id
+elevator_shafts.id - elevators.shaft_id
+elevators.id < elevator_floor_service.elevator_id
+floors.id < elevator_floor_service.floor_id
+elevators.id - elevator_status.elevator_id
+floors.id < floor_requests.floor_id
+floor_requests.id - ride_allocations.request_id
+elevators.id < ride_allocations.elevator_id
+ride_allocations.id - ride_logs.allocation_id
+elevators.id < maintenance_records.elevator_id
